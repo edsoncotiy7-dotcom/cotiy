@@ -1,0 +1,114 @@
+HILOS COTIY - Sistema de ventas en la nube
+==========================================
+Un solo enlace para todos los teléfonos. Cada persona entra con su usuario y contraseña y ve la
+misma información en tiempo real (los cambios llegan en ~3 segundos, sin recargar).
+
+CUENTAS INICIALES (se crean desde el archivo cuentas_iniciales.sql)
+  admin    -> ADMINISTRADOR, contraseña 1234
+  edson    -> Cajero, contraseña 1111
+  adonias  -> Cajero, contraseña 2222
+  Las tres contraseñas se pueden cambiar desde el botón "Contraseña".
+
+INSTALACIÓN - PASOS (una sola vez, unos 15 minutos)
+  1. Entra a https://supabase.com, crea una cuenta gratis y un proyecto nuevo (guarda su contraseña).
+  2. Menú Authentication > Sign In / Providers > Email:
+        "Confirm email"                 -> DESACTIVADO
+        "Allow new users to sign up"    -> ACTIVADO
+  3. Menú SQL Editor > New query: pega TODO el archivo instalar.sql y presiona Run.
+     (Esto crea las tablas, las reglas de seguridad y carga tus datos actuales.)
+  4. En SQL Editor > New query, pega TODO el archivo cuentas_iniciales.sql y presiona Run.
+     Esto crea automáticamente admin, edson y adonias. Ya no aparece la pantalla "Primer uso".
+  5. Menú Project Settings > API: copia "Project URL" y la llave "anon" (o "publishable").
+     Ábrelas en js/config.js y pégalas entre las comillas de SUPABASE_URL y SUPABASE_KEY.
+     NUNCA uses la llave "service_role".
+  6. Sube la carpeta completa a https://app.netlify.com/drop (arrastras la carpeta). Te da un enlace.
+  7. Abre ese enlace desde cualquier teléfono o computadora e ingresa con una de las cuentas.
+  8. Cambia las contraseñas iniciales desde el botón "Contraseña" (arriba, junto a "Salir").
+  9. Para agregar más cajeros: entra como administrador > pestaña Cuentas > "Nueva cuenta" > rol Cajero.
+
+SI LA PÁGINA SALE EN BLANCO
+  Ya no debe quedar en blanco sin explicar: si algo falla aparece un mensaje en pantalla.
+  - "No se cargaron los archivos del sistema": estás abriendo index.html suelto o dentro del zip.
+    Descomprime el zip y abre el index.html de la carpeta (con css y js al lado). En Netlify sube la
+    CARPETA completa, no solo index.html.
+  - "El sistema tarda en responder": revisa tu internet y recarga.
+  - En Visual Studio Code usa Open with Live Server sobre index.html.
+
+SI ALGO FALLA
+  - Aviso rojo "modo local" arriba: js/config.js quedó vacío o sin guardar antes de subir la carpeta.
+    Pega la URL y la llave, guarda, y vuelve a subir la carpeta.
+  - Sirve la llave nueva ("publishable", empieza con sb_publishable_) o la antigua "anon".
+  - "No se pudo conectar con la base de datos": revisa que la URL y la llave estén bien copiadas,
+    que hayas ejecutado instalar.sql completo y que tengas internet.
+  - "Email address ... is invalid": en js/config.js cambia DOMINIO_CORREO por "outlook.com".
+    Hazlo antes de crear cuentas adicionales desde el panel de administración.
+  - "Desactiva Confirm email": revisa el paso 2.
+  - Si una cuenta inicial no aparece, vuelve a ejecutar cuentas_iniciales.sql en el SQL Editor.
+
+PERMISOS (los aplica la propia base de datos, no solo la pantalla)
+  Administrador: todo, incluido crear usuarios, cambiar roles y desactivar cuentas.
+  Supervisor: ventas + inventario, precios, existencias, logo, Excel y respaldo.
+  Cajero: vender, deudores, caja y ver ventas. No puede cambiar productos, stock ni ventas.
+
+CONTRASEÑAS
+  - Cada persona puede cambiar la suya con el botón "Contraseña" (junto a "Salir").
+  - Las de 4 dígitos (0000, 1111) son fáciles de adivinar. Conviene cambiarlas por otras más largas.
+  - Si alguien la olvida: el administrador desactiva esa cuenta y crea otra con otro usuario.
+
+RESPALDO (hazlo cada semana)
+  Cuentas > "Descargar respaldo (.json)" y "Descargar Excel". Guárdalos en Drive o USB.
+  Los proyectos gratis de Supabase se pausan si pasan 7 días sin usarse. Si pasa, entra a
+  supabase.com y presiona "Restore project". Con uso diario no ocurre.
+
+TICKETS DE VENTA
+  - Al confirmar cada venta aparecen los botones "Ver ticket" e "Imprimir ticket".
+  - Cada ticket lleva un número correlativo único (000001, 000002...) que entrega la base de datos,
+    así que nunca se repite aunque dos personas vendan al mismo tiempo desde distintos teléfonos.
+  - Trae: VENTA DE HILOS COTIY, Nahualá, Cantón Patzité, teléfonos 4051-7033 y 3143-1159, número,
+    fecha y hora, quién atendió, productos con cantidad, precio unitario y subtotal, total, forma de
+    pago (efectivo recibido y cambio, o cliente si fue a crédito), observaciones y agradecimiento.
+  - En el cobro hay un campo "Observaciones (opcional)" que sale impreso en el ticket.
+  - Vista previa en papel de 58 mm o de 80 mm (se recuerda la última opción).
+  - Al imprimir solo sale el ticket: no salen botones, menús ni nada del sistema.
+    En el cuadro de impresión del navegador elige tu impresora térmica, "Márgenes: Ninguno" y
+    "Escala: 100%".
+  - Reimprimir: en la pestaña Ventas cada venta tiene un botón "Ticket". Los reimpresos salen
+    marcados como "** REIMPRESIÓN **".
+  - Historial (pestaña Tickets, solo administrador y supervisor): busca por número, rango de fechas o
+    empleado, muestra el total y lo vendido por cada empleado, y permite abrir o reimprimir cualquier
+    ticket anterior. Los cajeros NO ven este historial.
+  - Para cambiar el nombre, la dirección o los teléfonos del ticket: js/tickets.js (arriba, NEGOCIO).
+  - Si no se puede obtener el número de ticket (sin internet), la venta NO se registra, para no
+    dejar ventas sin comprobante ni números repetidos.
+
+SI YA HABÍAS INSTALADO LA VERSIÓN ANTERIOR (con tus datos en Supabase)
+  1. Supabase > SQL Editor: pega actualizacion_tickets.sql y presiona Run. Crea el contador de tickets y
+     numera las ventas anteriores en orden de fecha. No borra nada.
+  2. Vuelve a subir la carpeta completa a Netlify (el mismo sitio) para que tome los archivos nuevos.
+  Si es una instalación nueva, no necesitas actualizacion_tickets.sql (instalar.sql ya lo incluye).
+
+USUARIOS (Administrador / Empleado)
+  - Las cuentas iniciales admin, edson y adonias se crean ejecutando cuentas_iniciales.sql
+    después de instalar.sql. No se necesita crear un administrador desde la página.
+  - Registrar empleados: entra como administrador > pestaña Cuentas > "Nueva cuenta": nombre, usuario,
+    contraseña y rol (Cajero = empleado de ventas; Supervisor = empleado con inventario y precios).
+    Desde ahí también cambias roles y desactivas cuentas.
+  - Cada empleado entra con su usuario y contraseña desde su teléfono, y cada venta guarda quién la hizo.
+  - Para cambiar la contraseña, cada usuario entra y pulsa "Contraseña".
+
+ARCHIVOS
+  index.html, css/style.css       página y diseño
+  js/config.js                    datos de Supabase (lo único que debes editar)
+  js/storage.js, js/app.js        conexión y lógica del sistema
+  js/export.js                    Excel y respaldo
+  js/tickets.js                   tickets, impresión e historial
+  actualizacion_tickets.sql       solo para quien ya instaló la versión anterior
+  instalar.sql                    tablas + seguridad + tus datos actuales
+  cuentas_iniciales.sql           crea automáticamente admin, edson y adonias
+  migracion/datos_migracion.json  copia de tus datos (por si quieres restaurarlos desde el sistema)
+
+PRUEBA SIN INTERNET
+  Con js/config.js vacío funciona en modo local (solo ese navegador). No comparte datos.
+  IMPORTANTE: para que funcione desde cualquier lugar, necesitas configurar SUPABASE_URL y
+  SUPABASE_KEY en js/config.js y publicar la carpeta completa en un hosting. Sin esas credenciales
+  no existe una base de datos central a la que puedan conectarse los dispositivos.

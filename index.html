@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hilos Cotiy – Punto de venta</title>
+<link rel="stylesheet" href="css/style.css"></head><body>
+<div id="boot" style="padding:28px 16px;text-align:center;font:16px/1.5 system-ui,sans-serif;color:#555">Cargando el sistema…</div>
+<script>
+(function(){var t0=Date.now(),b=document.getElementById("boot");
+function vis(id){var e=document.getElementById(id);return e&&!e.hidden}
+function msg(x){if(b&&b.parentNode)b.innerHTML=x}
+window.addEventListener("error",function(e){msg("<b>Ocurrió un error al cargar el sistema.</b><br><small>"+String(e.message||"").replace(/</g,"&lt;")+"</small>")});
+var iv=setInterval(function(){
+ if(vis("login")||vis("app")){if(b&&b.parentNode)b.parentNode.removeChild(b);clearInterval(iv);return}
+ var s=(Date.now()-t0)/1000;
+ if(s>4&&!window.COTIY_BOOTED)msg("<b>No se cargaron los archivos del sistema.</b><br>Abre <code>index.html</code> desde la carpeta ya descomprimida (con las carpetas <code>css</code> y <code>js</code> junto a él) o usa tu enlace publicado.");
+ else if(s>12)msg("<b>El sistema tarda en responder.</b><br>Revisa tu conexión a internet y recarga la página.");
+},500)})();
+</script>
+<noscript><p style="padding:24px;text-align:center">Activa JavaScript en tu navegador para usar el sistema.</p></noscript>
+<div id="login" class="wrap login" hidden></div>
+<div id="app" hidden>
+<header><h1 id="bh">🧵 Hilos Cotiy</h1><span class="chip" id="who"></span><button class="sec" id="pw" hidden>Contraseña</button><button class="sec" id="out">Salir</button></header>
+<div class="wrap">
+<nav id="nav"></nav>
+<section id="v-vender" class="grid sell">
+ <div class="card"><h2>Productos</h2><div class="tiles" id="tiles"></div></div>
+ <div class="card"><h2>Venta actual</h2><div id="cart"></div><div class="tot"><span>Total</span><span id="ctot">Q0.00</span></div>
+  <div class="row"><button class="sec" id="clr">Vaciar</button><button id="pay">Pagar</button></div></div>
+</section>
+<section id="v-deudores" hidden><div class="card"><h2>Deudores</h2><div id="debt" class="tbl"></div></div></section>
+<section id="v-caja" hidden>
+ <div class="card"><h2>Cierre de caja</h2><p class="mut">Cuenta todo lo vendido desde el último cierre.</p><div id="cs" class="tbl"></div>
+  <label>Fondo inicial en caja (Q)</label><input id="cf" type="number" inputmode="decimal" placeholder="0.00">
+  <label>Efectivo contado (Q)</label><input id="cc" type="number" inputmode="decimal" placeholder="0.00">
+  <div id="cr" class="chg"></div><button id="csave" style="width:100%">Cerrar caja y guardar</button></div>
+ <div class="card"><h2>Cierres anteriores</h2><div id="ch" class="tbl"></div></div>
+</section>
+<section id="v-ventas" hidden><div class="card"><h2>Ventas</h2><label>Ver las ventas de otro día</label><div class="row"><input id="vd" type="date"><button class="sec s" id="vdx">Turno actual</button></div><div id="vt" class="mut" style="margin:8px 0"></div><div id="sl" class="tbl"></div></div></section>
+<section id="v-tickets" hidden>
+ <div class="card"><h2>Historial de tickets</h2>
+  <div class="row"><div><label>Número de ticket</label><input id="tn" inputmode="numeric" placeholder="Ej. 125"></div><div><label>Empleado</label><select id="te"><option value="">Todos los empleados</option></select></div></div>
+  <div class="row"><div><label>Desde</label><input id="td1" type="date"></div><div><label>Hasta</label><input id="td2" type="date"></div><button class="sec s" id="tclr" style="align-self:flex-end">Limpiar</button></div>
+  <div id="tsum" style="margin:10px 0"></div><div id="tl" class="tbl"></div></div>
+</section>
+<section id="v-inv" hidden>
+ <div class="card"><h2>Agregar producto</h2>
+  <div class="row"><input id="pn" placeholder="Nombre (ej. Hilos 4023)"><input id="pc" placeholder="Color (opcional)"></div>
+  <div class="row"><input id="pg" placeholder="Calibre (opcional)"><input id="pp" type="number" step="0.01" min="0" placeholder="Precio Q"></div>
+  <div class="row"><input id="ps" type="number" min="0" placeholder="Existencia inicial"><button class="s" id="padd">Guardar</button></div></div>
+ <div class="card"><h2>Inventario</h2><div id="inv" class="tbl"></div></div>
+</section>
+<section id="v-users" hidden>
+ <div class="card"><h2>Respaldo y reportes</h2>
+  <div class="row"><div><label>Desde</label><input id="xd" type="date"></div><div><label>Hasta</label><input id="xh" type="date"></div></div>
+  <div class="row"><button id="xl">Descargar Excel</button></div>
+  <div class="row"><button class="sec" id="bk">Descargar respaldo (.json)</button></div>
+  <label>Restaurar desde un respaldo (.json)</label><input id="rs" type="file" accept=".json">
+  <div class="row"><button class="sec" id="mg" hidden>Subir a la nube los datos guardados en este navegador</button></div>
+  <p class="mut">Las fechas filtran ventas, abonos y cierres del Excel. Guarda el respaldo en un lugar seguro: incluye las cuentas.</p></div>
+ <div class="card"><h2>Logo y nombre del negocio</h2><div class="row"><input id="bn" placeholder="Nombre del negocio"><button class="s" id="bsave">Guardar nombre</button></div><label>Cambiar logo (imagen)</label><input id="bf" type="file" accept="image/*"><label>Tamaño del logo: <b id="bsz">40</b> px</label><input id="bs" type="range" min="24" max="120" value="40"><div class="row"><button class="sec" id="brm">Quitar logo</button></div></div>
+ <div class="card" data-adm><h2>Nueva cuenta</h2>
+  <div class="row"><input id="un" placeholder="Nombre completo"></div>
+  <div class="row"><input id="uu" placeholder="Usuario (sin espacios)" autocapitalize="none" hidden><input id="up" type="password" placeholder="PIN (4+ dígitos)"></div>
+  <div class="row"><select id="ur"><option value="cajero">Cajero</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select><button class="s" id="uadd">Crear</button></div></div>
+ <div class="card" data-adm><h2>Cuentas</h2><div id="ul" class="tbl"></div></div>
+</section>
+</div></div>
+<div id="ov" class="ov" hidden><div class="md" id="md"></div></div>
+<div id="toast" hidden></div>
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/export.js"></script>
+<script src="js/tickets.js"></script></body></html>
